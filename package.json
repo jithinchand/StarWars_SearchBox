@@ -1,0 +1,20 @@
+{
+  "name": "shoppingcart",
+  "version": "1.0.0",
+  "description": "\"A simple shopping cart app\"",
+  "main": "index.js",
+  "keywords": [
+    "shopping",
+    "cart",
+    "angular",
+    "app"
+  ],
+  "author": "JithinChand",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.14.0"
+  }
+}
