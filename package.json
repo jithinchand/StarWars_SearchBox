@@ -1,16 +1,17 @@
 {
-  "name": "shoppingcart",
+  "name": "starwarsworld",
   "version": "1.0.0",
-  "description": "\"A simple shopping cart app\"",
+  "description": "\"A simple search box to search the star wars api (swapi)\"",
   "main": "index.js",
   "keywords": [
-    "shopping",
-    "cart",
-    "angular",
+    "search",
+    "starwars",
+    "swapi",
     "app"
   ],
   "author": "JithinChand",
   "dependencies": {
+    "angular-route": "^1.5.8",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.7"
   },
