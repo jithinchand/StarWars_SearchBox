@@ -1,5 +1,5 @@
 'use strict';
-var searchApp = angular.module('StarWarsSearchApp', ['ngRoute'])
+var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial'])
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
@@ -46,6 +46,63 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute'])
             });
         }
     })
-    .controller('SearchCtrl', function ($scope, personsList) {
+    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope) {
+        var self = this;
+        var personsList = $rootScope.pdata;
+        // list of `state` value/display objects
+        self.states        = loadAll();
+        self.querySearch   = querySearch;
+
+        /**
+         * Search for states... use $timeout to simulate
+         * remote dataservice call.
+         */
+        function querySearch (query) {
+            var results = query ? self.states.filter( createFilterFor(query) ) : self.states,
+                deferred;
+            if (self.simulateQuery) {
+                deferred = $q.defer();
+                $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
+                return deferred.promise;
+            } else {
+                return results;
+            }
+        }
+
+        /**
+         * Build `states` list of key/value pairs
+         */
+        function loadAll() {
+            var allPersonsNames = '';
+            for (var per in personsList) {
+                allPersonsNames += personsList[parseInt(per)].name + ', ';
+            }
+
+            return allPersonsNames.split(/, +/g).map( function (state) {
+                return {
+                    value: state.toLowerCase(),
+                    display: state
+                };
+            });
+        }
+
+        /**
+         * Create filter function for a query string
+         */
+        function createFilterFor(query) {
+            var lowercaseQuery = angular.lowercase(query);
+
+            return function filterFn(state) {
+                return (state.value.indexOf(lowercaseQuery) === 0);
+            };
+
+        }
+        
+        self.displayResults = function () {
+            console.log(self.selectedItem);
+        }
+    })
+    .controller('SearchCtrl', function ($rootScope, $scope, personsList) {
+        $rootScope.pdata = personsList;
         $scope.personsData = personsList;
     });

@@ -1,2 +1,22 @@
-<input type="text" ng-model="searchBox">
-{{personsData}}
+<div ng-controller="AutoComplete as con">
+    <md-content class="md-padding">
+        <form ng-submit="con.displayResults();$event.preventDefault();">
+            <input type="submit" hide="true">
+            <md-autocomplete
+                    md-selected-item="con.selectedItem"
+                    md-search-text="con.searchText"
+                    md-items="item in con.querySearch(con.searchText)"
+                    md-item-text="item.display"
+                    md-min-length="1"
+                    placeholder="Find People, Films, Starships and more..." ng-model="con.selectedPerson">
+                <md-item-template>
+                    <span md-highlight-text="con.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                </md-item-template>
+                <md-not-found>
+                    No results matching "{{con.searchText}}" were found.
+                </md-not-found>
+            </md-autocomplete>
+            <br/>
+        </form>
+    </md-content>
+</div>
