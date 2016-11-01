@@ -52,6 +52,7 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial'])
         // list of `state` value/display objects
         self.states        = loadAll();
         self.querySearch   = querySearch;
+        self.loaded = false;
 
         /**
          * Search for states... use $timeout to simulate
@@ -95,11 +96,18 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial'])
             return function filterFn(state) {
                 return (state.value.indexOf(lowercaseQuery) === 0);
             };
-
         }
         
         self.displayResults = function () {
             console.log(self.selectedItem);
+            self.resultsToDisplay = '';
+            for (var per in personsList) {
+                if (self.selectedItem.display == personsList[parseInt(per)].name) {
+                    self.resultsToDisplay = personsList[parseInt(per)];
+                }
+            }
+            self.loaded = true;
+            console.log(self.resultsToDisplay);
         }
     })
     .controller('SearchCtrl', function ($rootScope, $scope, personsList) {

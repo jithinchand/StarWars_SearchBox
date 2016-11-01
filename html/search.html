@@ -19,4 +19,17 @@
             <br/>
         </form>
     </md-content>
+
+    <div ng-show="con.loaded">
+        <h2>{{con.resultsToDisplay.name}}</h2>
+        <ul>
+            <li>Height     : {{con.resultsToDisplay.height}}</li>
+            <li>Mass       : {{con.resultsToDisplay.mass}}</li>
+            <li>Gender     : {{con.resultsToDisplay.gender}}</li>
+            <li>Birth year : {{con.resultsToDisplay.birth_year}}</li>
+            <li>Eye color  : {{con.resultsToDisplay.eye_color}}</li>
+            <li>Hair color : {{con.resultsToDisplay.hair_color}}</li>
+            <li>Skin color : {{con.resultsToDisplay.skin_color}}</li>
+        </ul>
+    </div>
 </div>
