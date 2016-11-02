@@ -1,5 +1,5 @@
 <div ng-controller="AutoComplete as con">
-    <md-content class="md-padding">
+    <md-content>
         <form ng-submit="con.displayResults();$event.preventDefault();">
             <input type="submit" hide="true">
             <md-autocomplete
@@ -20,7 +20,7 @@
         </form>
     </md-content>
 
-    <div ng-show="con.loaded">
+    <div ng-show="con.loaded" id="PersonDet">
         <h2>{{con.resultsToDisplay.name}}</h2>
         <ul>
             <li>Height     : {{con.resultsToDisplay.height}}</li>
