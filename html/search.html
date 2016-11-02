@@ -20,7 +20,7 @@
         </form>
     </md-content>
 
-    <div ng-show="con.loaded" id="PersonDet">
+    <div ng-show="con.loadPerson" id="PersonDet">
         <h2>{{con.resultsToDisplay.name}}</h2>
         <ul>
             <li>Height     : {{con.resultsToDisplay.height}}</li>
@@ -30,6 +30,17 @@
             <li>Eye color  : {{con.resultsToDisplay.eye_color}}</li>
             <li>Hair color : {{con.resultsToDisplay.hair_color}}</li>
             <li>Skin color : {{con.resultsToDisplay.skin_color}}</li>
+        </ul>
+    </div>
+    <div ng-show="con.loadFilm">
+        <h2>{{con.resultsToDisplay.title}}</h2>
+        <ul>
+            <li>Episode       : {{con.resultsToDisplay.episode_id}}</li>
+            <li>Director      : {{con.resultsToDisplay.director}}</li>
+            <li>Producer      : {{con.resultsToDisplay.producer}}</li>
+            <li>Release date  : {{con.resultsToDisplay.release_date}}</li>
+            <li>Opening crawl : </li>
+            <p>{{con.resultsToDisplay.opening_crawl}}</p>{{con.tempdata}}
         </ul>
     </div>
 </div>

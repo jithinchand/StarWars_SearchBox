@@ -1,5 +1,6 @@
 'use strict';
 var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'LocalStorageModule'])
+    .constant('MODIFIERS', ['people', 'films'])
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
@@ -15,30 +16,52 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
                 redirectTo: '/'
             });
     })
-    .factory('personsListFactory', function ($http, $q) {
+    .factory('personsListFactory', function ($http, $q, MODIFIERS) {
         return {
-            getPersonsList: function() {
-                return $http.get('http://swapi.co/api/people').then(function(response) {
-                    var count = response.data.count;
-                    var lastPage = 1;
-                    if (count % 10 == 0)
-                        lastPage = 0;
-                    var totPages = count/10 + lastPage;
-                    var promiseResults = [];
-                    var results = [];
-                    for (var i = 1; i <= totPages; i++) {
-                        promiseResults.push(getResource('http://swapi.co/api/people/?page=' + i));
+            getPersonsList: function () {
+                var completePromiseData = [];
+                var completeData = [];
+                for (var i = 0; i < MODIFIERS.length; i++) {
+                    completePromiseData.push(getModifierResources(MODIFIERS[i]));
+                }
+                return $q.all(completePromiseData).then(function (response) {
+                    for (var res in response) {
+                        console.log(response[parseInt(res)]);
+                        completeData.push(response[parseInt(res)]);
                     }
-
-                    return $q.all(promiseResults).then(function (response) {
-                        for (var res in response) {
-                            results = results.concat(response[parseInt(res)]);
-                        }
-                        return results;
-                    });
+                    return completeData;
                 });
             }
         };
+
+        function getModifierResources(modifier) {
+            return $http.get('http://swapi.co/api/' + modifier).then(function(response) {
+                var count = response.data.count;
+                var lastPage = 1;
+                if (count % 10 == 0)
+                    lastPage = 0;
+                var totPages = count/10 + lastPage;
+                var promiseResults = [];
+                var results = [];
+                for (var i = 1; i <= totPages; i++) {
+                    promiseResults.push(getResource('http://swapi.co/api/'+ modifier + '/?page=' + i));
+                }
+
+                return $q.all(promiseResults).then(function (response) {
+                    for (var res in response) {
+                        results = results.concat(response[parseInt(res)]);
+                    }
+                    var objResutls = {}
+                    switch (modifier) {
+                        case MODIFIERS[0] : objResutls[MODIFIERS[0]] = results;
+                            break;
+                        case MODIFIERS[1] : objResutls[MODIFIERS[1]] = results;
+                            break;
+                    }
+                    return objResutls;
+                });
+            });
+        }
 
         function getResource(url) {
             return $http.get(url).then(function(response) {
@@ -46,16 +69,20 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             });
         }
     })
-    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, localStorageService) {
+    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, localStorageService, MODIFIERS) {
         var self = this;
         var personsList = $rootScope.pdata;
         // list of `state` value/display objects
         self.states        = loadAll();
         self.querySearch   = querySearch;
-        if (localStorageService.get('divLoaded') == true)
-            self.loaded = true;
+        if (localStorageService.get('divLoadPerson') == true)
+            self.loadPerson = true;
         else
-            self.loaded = false;
+            self.loadPerson = false;
+        if (localStorageService.get('divLoadFilm') == true)
+            self.loadFilm = true;
+        else 
+            self.loadFilm = false;
         if (localStorageService.get('divResultsToDisplay') != null)
             self.resultsToDisplay = localStorageService.get('divResultsToDisplay');
         else
@@ -81,17 +108,31 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
          * Build `states` list of key/value pairs
          */
         function loadAll() {
-            var allPersonsNames = '';
-            for (var per in personsList) {
-                allPersonsNames += personsList[parseInt(per)].name + ', ';
+            var allPersonsNamesArr = [];
+            for (var mod in personsList) {
+                if (personsList[mod].people) {
+                    var tempArr = personsList[mod].people;
+                    for (var per in tempArr) {
+                        allPersonsNamesArr.push({
+                            value: tempArr[parseInt(per)].name.toLowerCase(),
+                            modifier: MODIFIERS[0],
+                            display: tempArr[parseInt(per)].name
+                        });
+                    }
+                }
+                else if(personsList[mod].films) {
+                    var tempArr = personsList[mod].films;
+                    for (var per in tempArr) {
+                        allPersonsNamesArr.push({
+                            value: tempArr[parseInt(per)].title.toLowerCase(),
+                            modifier: MODIFIERS[1],
+                            display: tempArr[parseInt(per)].title
+                        });
+                    }
+                }
             }
 
-            return allPersonsNames.split(/, +/g).map( function (state) {
-                return {
-                    value: state.toLowerCase(),
-                    display: state
-                };
-            });
+            return allPersonsNamesArr;
         }
 
         /**
@@ -107,18 +148,43 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
         
         self.displayResults = function () {
             console.log(self.selectedItem);
-            for (var per in personsList) {
-                if (self.selectedItem.display == personsList[parseInt(per)].name) {
-                    self.resultsToDisplay = personsList[parseInt(per)];
+            switch (self.selectedItem.modifier) {
+                case MODIFIERS[0]:
+            }
+            for (var mod in personsList) {
+                if (self.selectedItem.modifier == MODIFIERS[0]) {
+                    if (personsList[mod].people) {
+                        var tempArr = personsList[mod].people;
+                        for (var per in tempArr) {
+                            if (self.selectedItem.display == tempArr[parseInt(per)].name) {
+                                self.resultsToDisplay = tempArr[parseInt(per)];
+                                self.loadPerson = true;
+                                self.loadFilm = false;
+                            }
+                        }
+                    }
+                }
+                else if (self.selectedItem.modifier == MODIFIERS[1]) {
+                    if (personsList[mod].films) {
+                        var tempArr = personsList[mod].films;
+                        for (var per in tempArr) {
+                            if (self.selectedItem.display == tempArr[parseInt(per)].title) {
+                                self.resultsToDisplay = tempArr[parseInt(per)];
+                                self.loadFilm = true;
+                                self.loadPerson = false;
+                            }
+                        }
+                    }
                 }
             }
-            self.loaded = true;
             localStorageService.set('divResultsToDisplay', self.resultsToDisplay);
-            localStorageService.set('divLoaded', self.loaded);
+            localStorageService.set('divLoadPerson', self.loadPerson);
+            localStorageService.set('divLoadFilm', self.loadFilm);
             console.log(self.resultsToDisplay);
         }
     })
     .controller('SearchCtrl', function ($rootScope, $scope, personsList) {
         $rootScope.pdata = personsList;
         $scope.personsData = personsList;
+        console.log(personsList);
     });
