@@ -1,7 +1,7 @@
 <div ng-controller="AutoComplete as con">
     <md-content>
         <form ng-submit="con.displayResults();$event.preventDefault();">
-            <input type="submit" hide="true">
+            <input type="submit" ng-hide="true">
             <md-autocomplete
                     md-selected-item="con.selectedItem"
                     md-search-text="con.searchText"
@@ -20,27 +20,87 @@
         </form>
     </md-content>
 
-    <div ng-show="con.loadPerson" id="PersonDet">
-        <h2>{{con.resultsToDisplay.name}}</h2>
-        <ul>
-            <li>Height     : {{con.resultsToDisplay.height}}</li>
-            <li>Mass       : {{con.resultsToDisplay.mass}}</li>
-            <li>Gender     : {{con.resultsToDisplay.gender}}</li>
-            <li>Birth year : {{con.resultsToDisplay.birth_year}}</li>
-            <li>Eye color  : {{con.resultsToDisplay.eye_color}}</li>
-            <li>Hair color : {{con.resultsToDisplay.hair_color}}</li>
-            <li>Skin color : {{con.resultsToDisplay.skin_color}}</li>
-        </ul>
-    </div>
-    <div ng-show="con.loadFilm">
-        <h2>{{con.resultsToDisplay.title}}</h2>
-        <ul>
-            <li>Episode       : {{con.resultsToDisplay.episode_id}}</li>
-            <li>Director      : {{con.resultsToDisplay.director}}</li>
-            <li>Producer      : {{con.resultsToDisplay.producer}}</li>
-            <li>Release date  : {{con.resultsToDisplay.release_date}}</li>
-            <li>Opening crawl : </li>
-            <p>{{con.resultsToDisplay.opening_crawl}}</p>{{con.tempdata}}
-        </ul>
+    <div id="PersonDet">
+        <div ng-show="con.loadPerson">
+            <h2>{{con.resultsToDisplay.name}}</h2>
+            <ul>
+                <li>Height     : {{con.resultsToDisplay.height}}</li>
+                <li>Mass       : {{con.resultsToDisplay.mass}}</li>
+                <li>Gender     : {{con.resultsToDisplay.gender}}</li>
+                <li>Birth year : {{con.resultsToDisplay.birth_year}}</li>
+                <li>Eye color  : {{con.resultsToDisplay.eye_color}}</li>
+                <li>Hair color : {{con.resultsToDisplay.hair_color}}</li>
+                <li>Skin color : {{con.resultsToDisplay.skin_color}}</li>
+            </ul>
+        </div>
+        <div ng-show="con.loadFilm">
+            <h2>{{con.resultsToDisplay.title}}</h2>
+            <ul>
+                <li>Episode       : {{con.resultsToDisplay.episode_id}}</li>
+                <li>Director      : {{con.resultsToDisplay.director}}</li>
+                <li>Producer      : {{con.resultsToDisplay.producer}}</li>
+                <li>Release date  : {{con.resultsToDisplay.release_date}}</li>
+                <li>Opening crawl : </li>
+                <p>{{con.resultsToDisplay.opening_crawl}}</p>{{con.tempdata}}
+            </ul>
+        </div>
+        <div ng-show="con.loadPlanet">
+            <h2>{{con.resultsToDisplay.name}}</h2>
+            <ul>
+                <li>Population      : {{con.resultsToDisplay.population}}</li>
+                <li>Gravity         : {{con.resultsToDisplay.gravity}}</li>
+                <li>Climate         : {{con.resultsToDisplay.climate}}</li>
+                <li>Terrain         : {{con.resultsToDisplay.terrain}}</li>
+                <li>Diameter        : {{con.resultsToDisplay.diameter}}</li>
+                <li>Surface water   : {{con.resultsToDisplay.surface_water}}</li>
+                <li>Rotation period : {{con.resultsToDisplay.rotation_period}}</li>
+                <li>Orbital period  : {{con.resultsToDisplay.orbital_period}}</li>
+            </ul>
+        </div>
+        <div ng-show="con.loadSpecies">
+            <h2>{{con.resultsToDisplay.name}}</h2>
+            <ul>
+                <li>Language         : {{con.resultsToDisplay.language}}</li>
+                <li>Classification   : {{con.resultsToDisplay.classification}}</li>
+                <li>Designation      : {{con.resultsToDisplay.designation}}</li>
+                <li>Average height   : {{con.resultsToDisplay.average_height}}</li>
+                <li>Average lifespan : {{con.resultsToDisplay.average_lifespan}}</li>
+                <li>Eye color(s)     : {{con.resultsToDisplay.eye_colors}}</li>
+                <li>Hair color(s)    : {{con.resultsToDisplay.hair_colors}}</li>
+                <li>Skin color(s)    : {{con.resultsToDisplay.skin_colors}}</li>
+            </ul>
+        </div>
+        <div ng-show="con.loadStarships">
+            <h2>{{con.resultsToDisplay.name}}</h2>
+            <ul>
+                <li>Model             : {{con.resultsToDisplay.model}}</li>
+                <li>Class             : {{con.resultsToDisplay.starship_class}}</li>
+                <li>Manufacturer      : {{con.resultsToDisplay.manufacturer}}</li>
+                <li>Cost              : {{con.resultsToDisplay.cost_in_credits}} Credits</li>
+                <li>Length            : {{con.resultsToDisplay.length}}</li>
+                <li>Crew              : {{con.resultsToDisplay.crew}}</li>
+                <li>Passengers        : {{con.resultsToDisplay.passengers}}</li>
+                <li>Max speed         : {{con.resultsToDisplay.max_atmosphering_speed}}</li>
+                <li>Hyperdrive rating : {{con.resultsToDisplay.hyperdrive_rating}}</li>
+                <li>Max megalight     : {{con.resultsToDisplay.MGLT}}</li>
+                <li>Cargo capacity    : {{con.resultsToDisplay.cargo_capacity}}</li>
+                <li>Consumables       : {{con.resultsToDisplay.consumables}}</li>
+            </ul>
+        </div>
+        <div ng-show="con.loadVehicles">
+            <h2>{{con.resultsToDisplay.name}}</h2>
+            <ul>
+                <li>Model          : {{con.resultsToDisplay.model}}</li>
+                <li>Class          : {{con.resultsToDisplay.starship_class}}</li>
+                <li>Manufacturer   : {{con.resultsToDisplay.manufacturer}}</li>
+                <li>Cost           : {{con.resultsToDisplay.cost_in_credits}} Credits</li>
+                <li>Length         : {{con.resultsToDisplay.length}}</li>
+                <li>Crew           : {{con.resultsToDisplay.crew}}</li>
+                <li>Passengers     : {{con.resultsToDisplay.passengers}}</li>
+                <li>Max speed      : {{con.resultsToDisplay.max_atmosphering_speed}}</li>
+                <li>Cargo capacity : {{con.resultsToDisplay.cargo_capacity}}</li>
+                <li>Consumables    : {{con.resultsToDisplay.consumables}}</li>
+            </ul>
+        </div>
     </div>
 </div>

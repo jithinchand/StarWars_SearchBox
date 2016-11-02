@@ -1,6 +1,13 @@
 'use strict';
 var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'LocalStorageModule'])
-    .constant('MODIFIERS', ['people', 'films'])
+    .constant('NEWMODIFIERS', {
+        'PEOPLE' : 'people',
+        'FILMS'  : 'films',
+        'PLANETS': 'planets',
+        'SPECIES': 'species',
+        'STARSHIPS': 'starships',
+        'VEHICLES': 'vehicles'
+    })
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
@@ -16,13 +23,13 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
                 redirectTo: '/'
             });
     })
-    .factory('personsListFactory', function ($http, $q, MODIFIERS) {
+    .factory('personsListFactory', function ($http, $q, NEWMODIFIERS) {
         return {
             getPersonsList: function () {
                 var completePromiseData = [];
                 var completeData = [];
-                for (var i = 0; i < MODIFIERS.length; i++) {
-                    completePromiseData.push(getModifierResources(MODIFIERS[i]));
+                for (var modifier in NEWMODIFIERS) {
+                    completePromiseData.push(getModifierResources(NEWMODIFIERS[modifier]));
                 }
                 return $q.all(completePromiseData).then(function (response) {
                     for (var res in response) {
@@ -51,11 +58,21 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
                     for (var res in response) {
                         results = results.concat(response[parseInt(res)]);
                     }
-                    var objResutls = {}
+                    var objResutls = {};
                     switch (modifier) {
-                        case MODIFIERS[0] : objResutls[MODIFIERS[0]] = results;
+                        case NEWMODIFIERS.PEOPLE    : objResutls[NEWMODIFIERS.PEOPLE] = results;
                             break;
-                        case MODIFIERS[1] : objResutls[MODIFIERS[1]] = results;
+                        case NEWMODIFIERS.FILMS     : objResutls[NEWMODIFIERS.FILMS] = results;
+                            break;
+                        case NEWMODIFIERS.PLANETS   : objResutls[NEWMODIFIERS.PLANETS] = results;
+                            break;
+                        case NEWMODIFIERS.SPECIES   : objResutls[NEWMODIFIERS.SPECIES] = results;
+                            break;
+                        case NEWMODIFIERS.STARSHIPS : objResutls[NEWMODIFIERS.STARSHIPS] = results;
+                            break;
+                        case NEWMODIFIERS.VEHICLES  : objResutls[NEWMODIFIERS.VEHICLES] = results;
+                            break;
+                        default                     : objResutls;
                             break;
                     }
                     return objResutls;
@@ -69,7 +86,7 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             });
         }
     })
-    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, localStorageService, MODIFIERS) {
+    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, localStorageService, NEWMODIFIERS) {
         var self = this;
         var personsList = $rootScope.pdata;
         // list of `state` value/display objects
@@ -83,6 +100,22 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             self.loadFilm = true;
         else 
             self.loadFilm = false;
+        if (localStorageService.get('divLoadPlanet') == true)
+            self.loadPlanet = true;
+        else
+            self.loadPlanet = false;
+        if (localStorageService.get('divLoadSpecies') == true)
+            self.loadSpecies = true;
+        else
+            self.loadSpecies = false;
+        if (localStorageService.get('divLoadStarships') == true)
+            self.loadStarships = true;
+        else
+            self.loadStarships = false;
+        if (localStorageService.get('divLoadVehicles') == true)
+            self.loadVehicles = true;
+        else
+            self.loadVehicles = false;
         if (localStorageService.get('divResultsToDisplay') != null)
             self.resultsToDisplay = localStorageService.get('divResultsToDisplay');
         else
@@ -110,24 +143,78 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
         function loadAll() {
             var allPersonsNamesArr = [];
             for (var mod in personsList) {
-                if (personsList[mod].people) {
-                    var tempArr = personsList[mod].people;
+                if (personsList[mod].hasOwnProperty(NEWMODIFIERS.PEOPLE)) {
+                    var tempArr = personsList[mod][(NEWMODIFIERS.PEOPLE)];
                     for (var per in tempArr) {
                         allPersonsNamesArr.push({
                             value: tempArr[parseInt(per)].name.toLowerCase(),
-                            modifier: MODIFIERS[0],
+                            modifier: NEWMODIFIERS.PEOPLE,
                             display: tempArr[parseInt(per)].name
                         });
                     }
                 }
-                else if(personsList[mod].films) {
-                    var tempArr = personsList[mod].films;
+                else if(personsList[mod].hasOwnProperty(NEWMODIFIERS.FILMS)) {
+                    var tempArr = personsList[mod][NEWMODIFIERS.FILMS];
                     for (var per in tempArr) {
                         allPersonsNamesArr.push({
                             value: tempArr[parseInt(per)].title.toLowerCase(),
-                            modifier: MODIFIERS[1],
+                            modifier: NEWMODIFIERS.FILMS,
                             display: tempArr[parseInt(per)].title
                         });
+                    }
+                }
+                else if(personsList[mod].hasOwnProperty(NEWMODIFIERS.PLANETS)) {
+                    var tempArr = personsList[mod][NEWMODIFIERS.PLANETS];
+                    for (var per in tempArr) {
+                        allPersonsNamesArr.push({
+                            value: tempArr[parseInt(per)].name.toLowerCase(),
+                            modifier: NEWMODIFIERS.PLANETS,
+                            display: tempArr[parseInt(per)].name
+                        });
+                    }
+                }
+                else if(personsList[mod].hasOwnProperty(NEWMODIFIERS.SPECIES)) {
+                    var tempArr = personsList[mod][NEWMODIFIERS.SPECIES];
+                    for (var per in tempArr) {
+                        allPersonsNamesArr.push({
+                            value: tempArr[parseInt(per)].name.toLowerCase(),
+                            modifier: NEWMODIFIERS.SPECIES,
+                            display: tempArr[parseInt(per)].name
+                        });
+                    }
+                }
+                else if(personsList[mod].hasOwnProperty(NEWMODIFIERS.STARSHIPS)) {
+                    var tempArr = personsList[mod][NEWMODIFIERS.STARSHIPS];
+                    for (var per in tempArr) {
+                        allPersonsNamesArr.push({
+                            value: tempArr[parseInt(per)].name.toLowerCase(),
+                            modifier: NEWMODIFIERS.STARSHIPS,
+                            display: tempArr[parseInt(per)].name
+                        });
+                        if (tempArr[parseInt(per)].name != tempArr[parseInt(per)].model) {
+                            allPersonsNamesArr.push({
+                                value: tempArr[parseInt(per)].model.toLowerCase(),
+                                modifier: NEWMODIFIERS.STARSHIPS,
+                                display: tempArr[parseInt(per)].model
+                            });
+                        }
+                    }
+                }
+                else if(personsList[mod].hasOwnProperty(NEWMODIFIERS.VEHICLES)) {
+                    var tempArr = personsList[mod][NEWMODIFIERS.VEHICLES];
+                    for (var per in tempArr) {
+                        allPersonsNamesArr.push({
+                            value: tempArr[parseInt(per)].name.toLowerCase(),
+                            modifier: NEWMODIFIERS.VEHICLES,
+                            display: tempArr[parseInt(per)].name
+                        });
+                        if (tempArr[parseInt(per)].name != tempArr[parseInt(per)].model) {
+                            allPersonsNamesArr.push({
+                                value: tempArr[parseInt(per)].model.toLowerCase(),
+                                modifier: NEWMODIFIERS.VEHICLES,
+                                display: tempArr[parseInt(per)].model
+                            });
+                        }
                     }
                 }
             }
@@ -148,30 +235,99 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
         
         self.displayResults = function () {
             console.log(self.selectedItem);
-            switch (self.selectedItem.modifier) {
-                case MODIFIERS[0]:
-            }
             for (var mod in personsList) {
-                if (self.selectedItem.modifier == MODIFIERS[0]) {
-                    if (personsList[mod].people) {
-                        var tempArr = personsList[mod].people;
+                if (self.selectedItem.modifier == NEWMODIFIERS.PEOPLE) {
+                    if (personsList[mod].hasOwnProperty(NEWMODIFIERS.PEOPLE)) {
+                        var tempArr = personsList[mod][NEWMODIFIERS.PEOPLE];
                         for (var per in tempArr) {
                             if (self.selectedItem.display == tempArr[parseInt(per)].name) {
                                 self.resultsToDisplay = tempArr[parseInt(per)];
-                                self.loadPerson = true;
-                                self.loadFilm = false;
+                                self.loadPerson    = true;
+                                self.loadFilm      = false;
+                                self.loadPlanet    = false;
+                                self.loadSpecies   = false;
+                                self.loadStarships = false;
+                                self.loadVehicles  = false;
                             }
                         }
                     }
                 }
-                else if (self.selectedItem.modifier == MODIFIERS[1]) {
-                    if (personsList[mod].films) {
-                        var tempArr = personsList[mod].films;
+                else if (self.selectedItem.modifier == NEWMODIFIERS.FILMS) {
+                    if (personsList[mod].hasOwnProperty(NEWMODIFIERS.FILMS)) {
+                        var tempArr = personsList[mod][NEWMODIFIERS.FILMS];
                         for (var per in tempArr) {
                             if (self.selectedItem.display == tempArr[parseInt(per)].title) {
                                 self.resultsToDisplay = tempArr[parseInt(per)];
-                                self.loadFilm = true;
-                                self.loadPerson = false;
+                                self.loadPerson    = false;
+                                self.loadFilm      = true;
+                                self.loadPlanet    = false;
+                                self.loadSpecies   = false;
+                                self.loadStarships = false;
+                                self.loadVehicles  = false;
+                            }
+                        }
+                    }
+                }
+                else if (self.selectedItem.modifier == NEWMODIFIERS.PLANETS) {
+                    if (personsList[mod].hasOwnProperty(NEWMODIFIERS.PLANETS)) {
+                        var tempArr = personsList[mod][NEWMODIFIERS.PLANETS];
+                        for (var per in tempArr) {
+                            if (self.selectedItem.display == tempArr[parseInt(per)].name) {
+                                self.resultsToDisplay = tempArr[parseInt(per)];
+                                self.loadPerson    = false;
+                                self.loadFilm      = false;
+                                self.loadPlanet    = true;
+                                self.loadSpecies   = false;
+                                self.loadStarships = false;
+                                self.loadVehicles  = false;
+                            }
+                        }
+                    }
+                }
+                else if (self.selectedItem.modifier == NEWMODIFIERS.SPECIES) {
+                    if (personsList[mod].hasOwnProperty(NEWMODIFIERS.SPECIES)) {
+                        var tempArr = personsList[mod][NEWMODIFIERS.SPECIES];
+                        for (var per in tempArr) {
+                            if (self.selectedItem.display == tempArr[parseInt(per)].name) {
+                                self.resultsToDisplay = tempArr[parseInt(per)];
+                                self.loadPerson    = false;
+                                self.loadFilm      = false;
+                                self.loadPlanet    = false;
+                                self.loadSpecies   = true;
+                                self.loadStarships = false;
+                                self.loadVehicles  = false;
+                            }
+                        }
+                    }
+                }
+                else if (self.selectedItem.modifier == NEWMODIFIERS.STARSHIPS) {
+                    if (personsList[mod].hasOwnProperty(NEWMODIFIERS.STARSHIPS)) {
+                        var tempArr = personsList[mod][NEWMODIFIERS.STARSHIPS];
+                        for (var per in tempArr) {
+                            if (self.selectedItem.display == tempArr[parseInt(per)].name || self.selectedItem.display == tempArr[parseInt(per)].model) {
+                                self.resultsToDisplay = tempArr[parseInt(per)];
+                                self.loadPerson    = false;
+                                self.loadFilm      = false;
+                                self.loadPlanet    = false;
+                                self.loadSpecies   = false;
+                                self.loadStarships = true;
+                                self.loadVehicles  = false;
+                            }
+                        }
+                    }
+                }
+                else if (self.selectedItem.modifier == NEWMODIFIERS.VEHICLES) {
+                    if (personsList[mod].hasOwnProperty(NEWMODIFIERS.VEHICLES)) {
+                        var tempArr = personsList[mod][NEWMODIFIERS.VEHICLES];
+                        for (var per in tempArr) {
+                            if (self.selectedItem.display == tempArr[parseInt(per)].name || self.selectedItem.display == tempArr[parseInt(per)].model) {
+                                self.resultsToDisplay = tempArr[parseInt(per)];
+                                self.loadPerson    = false;
+                                self.loadFilm      = false;
+                                self.loadPlanet    = false;
+                                self.loadSpecies   = false;
+                                self.loadStarships = false;
+                                self.loadVehicles  = true;
                             }
                         }
                     }
@@ -180,6 +336,10 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             localStorageService.set('divResultsToDisplay', self.resultsToDisplay);
             localStorageService.set('divLoadPerson', self.loadPerson);
             localStorageService.set('divLoadFilm', self.loadFilm);
+            localStorageService.set('divLoadPlanet', self.loadPlanet);
+            localStorageService.set('divLoadSpecies', self.loadSpecies);
+            localStorageService.set('divLoadStarships', self.loadStarships);
+            localStorageService.set('divLoadVehicles', self.loadVehicles);
             console.log(self.resultsToDisplay);
         }
     })
