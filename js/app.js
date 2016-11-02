@@ -1,5 +1,5 @@
 'use strict';
-var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial'])
+var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'LocalStorageModule'])
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
@@ -46,13 +46,20 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial'])
             });
         }
     })
-    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope) {
+    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, localStorageService) {
         var self = this;
         var personsList = $rootScope.pdata;
         // list of `state` value/display objects
         self.states        = loadAll();
         self.querySearch   = querySearch;
-        self.loaded = false;
+        if (localStorageService.get('divLoaded') == true)
+            self.loaded = true;
+        else
+            self.loaded = false;
+        if (localStorageService.get('divResultsToDisplay') != null)
+            self.resultsToDisplay = localStorageService.get('divResultsToDisplay');
+        else
+            self.resultsToDisplay = null;
 
         /**
          * Search for states... use $timeout to simulate
@@ -100,13 +107,14 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial'])
         
         self.displayResults = function () {
             console.log(self.selectedItem);
-            self.resultsToDisplay = '';
             for (var per in personsList) {
                 if (self.selectedItem.display == personsList[parseInt(per)].name) {
                     self.resultsToDisplay = personsList[parseInt(per)];
                 }
             }
             self.loaded = true;
+            localStorageService.set('divResultsToDisplay', self.resultsToDisplay);
+            localStorageService.set('divLoaded', self.loaded);
             console.log(self.resultsToDisplay);
         }
     })
