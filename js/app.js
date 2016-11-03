@@ -86,7 +86,7 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             });
         }
     })
-    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, localStorageService, NEWMODIFIERS) {
+    .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, $filter, localStorageService, NEWMODIFIERS) {
         var self = this;
         var personsList = $rootScope.pdata;
         // list of `state` value/display objects
@@ -120,6 +120,14 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             self.resultsToDisplay = localStorageService.get('divResultsToDisplay');
         else
             self.resultsToDisplay = null;
+        if (localStorageService.get('divDate') != null)
+            self.present = localStorageService.get('divDate');
+        else
+            self.present = null;
+        if (localStorageService.get('divLoadDate') == true)
+            self.loadDate = true;
+        else
+            self.loadDate = false;
 
         /**
          * Search for states... use $timeout to simulate
@@ -341,6 +349,10 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             localStorageService.set('divLoadStarships', self.loadStarships);
             localStorageService.set('divLoadVehicles', self.loadVehicles);
             console.log(self.resultsToDisplay);
+            self.present = $filter('date')(Date.now(), "yyyy-MM-dd HH:mm");
+            self.loadDate = true;
+            localStorageService.set('divLoadDate', self.loadDate);
+            localStorageService.set('divDate', self.present);
         }
     })
     .controller('SearchCtrl', function ($rootScope, $scope, personsList) {
