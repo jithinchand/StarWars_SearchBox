@@ -89,50 +89,21 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
     .controller('AutoComplete', function ($scope, $timeout, $q, $log, $rootScope, $filter, localStorageService, NEWMODIFIERS) {
         var self = this;
         var personsList = $rootScope.pdata;
-        // list of `state` value/display objects
         self.states        = loadAll();
         self.querySearch   = querySearch;
-        if (localStorageService.get('divLoadPerson') == true)
-            self.loadPerson = true;
-        else
-            self.loadPerson = false;
-        if (localStorageService.get('divLoadFilm') == true)
-            self.loadFilm = true;
-        else 
-            self.loadFilm = false;
-        if (localStorageService.get('divLoadPlanet') == true)
-            self.loadPlanet = true;
-        else
-            self.loadPlanet = false;
-        if (localStorageService.get('divLoadSpecies') == true)
-            self.loadSpecies = true;
-        else
-            self.loadSpecies = false;
-        if (localStorageService.get('divLoadStarships') == true)
-            self.loadStarships = true;
-        else
-            self.loadStarships = false;
-        if (localStorageService.get('divLoadVehicles') == true)
-            self.loadVehicles = true;
-        else
-            self.loadVehicles = false;
-        if (localStorageService.get('divResultsToDisplay') != null)
-            self.resultsToDisplay = localStorageService.get('divResultsToDisplay');
-        else
-            self.resultsToDisplay = null;
-        if (localStorageService.get('divDate') != null)
-            self.present = localStorageService.get('divDate');
-        else
-            self.present = null;
-        if (localStorageService.get('divLoadDate') == true)
-            self.loadDate = true;
-        else
-            self.loadDate = false;
+        var storedResultsToDisplay = localStorageService.get('divResultsToDisplay');
+        var storedDate = localStorageService.get('divDate');
 
-        /**
-         * Search for states... use $timeout to simulate
-         * remote dataservice call.
-         */
+        self.loadPerson = localStorageService.get('divLoadPerson') == true;
+        self.loadFilm   = localStorageService.get('divLoadFilm') == true;
+        self.loadPlanet   = localStorageService.get('divLoadPlanet') == true;
+        self.loadSpecies   = localStorageService.get('divLoadSpecies') == true;
+        self.loadStarships   = localStorageService.get('divLoadStarships') == true;
+        self.loadVehicles   = localStorageService.get('divLoadVehicles') == true;
+        self.loadDate   = localStorageService.get('divLoadDate') == true;
+        self.resultsToDisplay   = storedResultsToDisplay != null ? storedResultsToDisplay :null;
+        self.present = storedDate != null ? storedDate : null;
+
         function querySearch (query) {
             var results = query ? self.states.filter( createFilterFor(query) ) : self.states,
                 deferred;
@@ -145,9 +116,6 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             }
         }
 
-        /**
-         * Build `states` list of key/value pairs
-         */
         function loadAll() {
             var allPersonsNamesArr = [];
             for (var mod in personsList) {
@@ -230,9 +198,6 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
             return allPersonsNamesArr;
         }
 
-        /**
-         * Create filter function for a query string
-         */
         function createFilterFor(query) {
             var lowercaseQuery = angular.lowercase(query);
 
