@@ -1,5 +1,5 @@
 'use strict';
-var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'LocalStorageModule'])
+var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'ngProgress', 'LocalStorageModule'])
     .constant('NEWMODIFIERS', {
         'PEOPLE' : 'people',
         'FILMS'  : 'films',
@@ -324,4 +324,14 @@ var searchApp = angular.module('StarWarsSearchApp', ['ngRoute', 'ngMaterial', 'L
         $rootScope.pdata = personsList;
         $scope.personsData = personsList;
         console.log(personsList);
+    });
+searchApp
+    .run(function($rootScope, ngProgressFactory) {
+        $rootScope.progressbar = ngProgressFactory.createInstance();
+        $rootScope.$on('$routeChangeStart', function(ev,data) {
+            $rootScope.progressbar.start();
+        });
+        $rootScope.$on('$routeChangeSuccess', function(ev,data) {
+            $rootScope.progressbar.complete();
+        });
     });
