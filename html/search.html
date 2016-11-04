@@ -1,4 +1,4 @@
-<div ng-controller="AutoComplete as con">
+<div ng-controller="AutoComplete as con" class="SrchBar">
     <md-content>
         <form ng-submit="con.displayResults();$event.preventDefault();">
             <input type="submit" ng-hide="true">
@@ -16,13 +16,12 @@
                     No results matching "{{con.searchText}}" were found.
                 </md-not-found>
             </md-autocomplete>
-            <div class="date_info">
-                <p ng-show="con.loadDate">Result displayed on {{con.present}}</p>
-            </div>
             <br/>
         </form>
     </md-content>
-
+    <div class="date_info">
+        <p ng-show="con.loadDate">Result displayed on {{con.present}}</p>
+    </div>
     <div id="Det">
         <div ng-show="con.loadPerson">
             <h2>{{con.resultsToDisplay.name}}</h2>
